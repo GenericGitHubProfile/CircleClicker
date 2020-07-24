@@ -1,11 +1,12 @@
 import { Circle } from './circle.mjs';
 import { Square } from './square.mjs';
+import { Sound } from './Sound.mjs';
 
 export class Game {
-    constructor(canvas, canvasHolder, width = 1000, height = 650) {
+    constructor(doc, canvasHolder, width = 1000, height = 650) {
 
         // Canvas Initialisation
-        this.canvas = canvas;
+        this.canvas = doc.createElement("canvas");
         this.ctx = this.canvas.getContext('2d');
         this.canvas.id = 'canvas';
         // These are made into constants for box to spawn circles inside, etc.
@@ -15,7 +16,7 @@ export class Game {
         this.canvas.height = this.HEIGHT;
 
         // Add it to the page
-        canvasHolder.appendChild(canvas);
+        canvasHolder.appendChild(this.canvas);
 
         // Displayed information Initialisation
         this.score = 0;
@@ -48,6 +49,11 @@ export class Game {
         // Display Info Initialisation
         this.SCORE_COORDS = {x: 95, y: 15};
         this.NOCIRCLES_COORDS = {x: 95, y: 35};
+
+        // Initialise Sound
+        this.popSlow = new Sound('./sounds/plopSlow.mp3', doc);
+        this.popMed = new Sound('./sounds/plopMed.mp3', doc);
+        this.popFast = new Sound('./sounds/plopFast.mp3', doc);
 
         // Other constants
         this.CIRCLE_DIST = 11;
@@ -93,18 +99,24 @@ export class Game {
     */
     endGame() {
         this.gameState = this.GAME_STATES.END;
+        console.log(this.gameState);
 
         // Remove interactive componants
         this.stopSpawningCircles();
         this.canvas.removeEventListener('click', this.canvasClickEvent.bind(null, this), false);
+
+        this.shapeArr = [];
 
         // Clear Screen
         let temp = new Square(0,0, this.canvas.width, this.canvas.height);
         temp.draw(this.ctx, this.BG_COL);
 
         // Display final score
-        this.ctx.font = "60px Arial";
-        this.ctx.fillText(`FINAL SCORE ${this.score}`, 200, 300);
+        this.ctx.fillStyle = "#000";
+        this.ctx.font = "100px Arial";
+        this.ctx.fillText(`FINAL SCORE: ${this.score}`, 130, 280);
+        this.ctx.font = "40px Arial";
+        this.ctx.fillText(`Play Again?`, 400, 370);
     }
 
     /*
@@ -112,7 +124,7 @@ export class Game {
     * currently sets the difficulty to medium
     */
     selectDifficulty() {
-        this.difficulty = this.GAME_DIFFICULTY.MEDIUM;
+        this.difficulty = this.GAME_DIFFICULTY.HARD;
     }
 
     /*
@@ -199,6 +211,7 @@ export class Game {
                 obj.increaseScore();
                 obj.updateNoCircles(-1);
                 obj.shapeArr.splice(i,1);
+                obj.playPop(Math.floor(Math.random() * 3));
                 obj.redraw();
             }
         });
@@ -214,6 +227,25 @@ export class Game {
             item.draw(this.ctx, item.fillCol);
         });
 
+    }
+
+    /*
+    * Plays a pop sound based on the given value
+    * Should only be 1, 2 or 3
+    */
+    playPop(num) {
+        switch (num) {
+            case 1:
+                this.popSlow.play();
+                break;
+            case 2:
+                this.popMed.play();
+                break;
+            case 3:
+                this.popFast.play();
+                break;
+        }
+        return;
     }
 
     /*
