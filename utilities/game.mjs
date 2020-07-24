@@ -51,9 +51,9 @@ export class Game {
         this.NOCIRCLES_COORDS = {x: 95, y: 35};
 
         // Initialise Sound
-        this.popSlow = new Sound('./sounds/plopSlow.mp3', doc);
-        this.popMed = new Sound('./sounds/plopMed.mp3', doc);
-        this.popFast = new Sound('./sounds/plopFast.mp3', doc);
+        this.popSlow = new Sound('./sounds/plopSlow.mp3');
+        this.popMed = new Sound('./sounds/plopMed.mp3');
+        this.popFast = new Sound('./sounds/plopQuick.mp3');
 
         // Other constants
         this.CIRCLE_DIST = 11;
@@ -124,7 +124,7 @@ export class Game {
     * currently sets the difficulty to medium
     */
     selectDifficulty() {
-        this.difficulty = this.GAME_DIFFICULTY.HARD;
+        this.difficulty = this.GAME_DIFFICULTY.MEDIUM;
     }
 
     /*
@@ -234,14 +234,15 @@ export class Game {
     * Should only be 1, 2 or 3
     */
     playPop(num) {
+        console.log(num);
         switch (num) {
-            case 1:
+            case 0:
                 this.popSlow.play();
                 break;
-            case 2:
+            case 1:
                 this.popMed.play();
                 break;
-            case 3:
+            case 2:
                 this.popFast.play();
                 break;
         }

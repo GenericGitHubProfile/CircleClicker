@@ -1,25 +1,17 @@
 export class Sound {
-    constructor(src = null, doc = null, loop=false) {
-        if (!src || !doc) throw Error("Must include a path to the sound file");
+    constructor(src = null, loop=false) {
+        if(!src) throw new Error("Must have file path to sound");
 
-        this.sound = doc.createElement("audio");
-        this.sound.src = src;
-        this.sound.setAttribute("preload", "auto");
-        this.sound.setAttribute("controls", "none");
-        if(typeof loop == "boolean") {
-            this.sound.setAttribute("loop", loop);
-        } else {
-            this.sound.setAttribute("loop", "false");
-        }
-        this.sound.style.display = "none";
-        document.body.appendChild(this.sound);
+        this.SOUND = new Audio(src);
+        this.SOUND.volume = 0.5;
+        this.SOUND.loop = loop;
     }
 
     play() {
-        this.sound.play();
+        this.SOUND.play();
     }
 
     stop() {
-        this.sound.pause();
+        this.SOUND.pause();
     }
 }
