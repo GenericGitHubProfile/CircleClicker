@@ -22,7 +22,6 @@ export class Game {
         this.score = 0;
         this.noCircles = 0;
         this.shapeArr = [];
-        this.ctx.font = '16px Arial';
 
         // Game states Initialisation
         this.GAME_STATES = Object.freeze({
@@ -81,6 +80,12 @@ export class Game {
     startGame() {
         this.gameState = this.GAME_STATES.MAIN;
 
+        this.ctx.font = '16px Arial';
+        this.noCircles=0;
+
+        let infoBoard = new Square(0,0,this.WIDTH, 50);
+        infoBoard.draw(this.ctx,'#fff');
+
         // Setup scoring and noCircle tracking
         this.ctx.fillStyle = '#000';
         this.ctx.fillText("Score: ", 10, 15);
@@ -112,11 +117,27 @@ export class Game {
         temp.draw(this.ctx, this.BG_COL);
 
         // Display final score
+
+
         this.ctx.fillStyle = "#000";
         this.ctx.font = "100px Arial";
         this.ctx.fillText(`FINAL SCORE: ${this.score}`, 130, 280);
+
+        this.canvas.addEventListener('click', this.playAgainClickEvent.bind(null,this),false);
+        let againBorder = new Square(400,370,100,100);
+        againBorder.draw(this.ctx,'rgba(0,0,0,0)','#000');
+
+        this.ctx.fillStyle = "#000";
+
+        this.ctx.fillStyle = "#000";
         this.ctx.font = "40px Arial";
         this.ctx.fillText(`Play Again?`, 400, 370);
+
+        // setTimeout(() => {
+        //
+        // }, this.difficulty + 0.2);
+
+
     }
 
     /*
@@ -217,6 +238,17 @@ export class Game {
         });
     }
 
+    playAgainClickEvent(obj,e) {
+        const RECT = obj.canvas.getBoundingClientRect();
+        const X = e.clientX - RECT.left;
+        const Y = e.clientY - RECT.top;
+        console.log(`X: ${X}\nY: ${Y}`);
+        if(X > 400 && X < 610 && Y > 320 && Y < 420) {
+            obj.canvas.removeEventListener('click', obj.playAgainClickEvent.bind(null, obj), false);
+            obj.setupGame();
+        }
+    }
+
     /*
     * Clears screen then redraws all circles
     */
@@ -231,10 +263,10 @@ export class Game {
 
     /*
     * Plays a pop sound based on the given value
-    * Should only be 1, 2 or 3
+    * Should only be 0, 1 or 2
     */
     playPop(num) {
-        console.log(num);
+        if(num > 2 || num < 0) throw new RangeError("Only three pop sounds are present, number passed must be 0, 1 or two");
         switch (num) {
             case 0:
                 this.popSlow.play();
@@ -248,6 +280,11 @@ export class Game {
         }
         return;
     }
+
+    /*
+    * UTILITY FUNCTIONS
+    * These are required for certain parts of this object, though do not entirely belong in this area
+    */
 
     /*
     * Returns a random number between the given min and max parameters
